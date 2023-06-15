@@ -1,32 +1,28 @@
-version: "3"
+version: '3.7'
 services:
+  db:
+    image: mysql:5.7.42
+    volumes:
+    - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mysql
   app:
-    image: internship_23
+    container_name: intern_app
+    depends_on:
+    - db
     build:
       context: .
       dockerfile: Dockerfile
+      no_cache: true
     ports:
-      - "9090:9090"
+    - "9090:9090"
+    restart: always
     environment:
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASS: ${MYSQL_PASS}
-      MYSQL_PORT: ${MYSQL_PORT}
-    depends_on:
-      - mysql
-  mysql:
-    image: mysql:8.0.18
-    environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASS}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_TCP_PORT: ${MYSQL_PORT}
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-    expose:
-      - ${MYSQL_PORT}
-    volumes:
-      - db_data:/var/lib/mysql
-
+    - 'MYSQL_PORT=3306'
+    - 'MYSQL_HOST=db'
+    - 'MYSQL_USER=root'
+    - 'MYSQL_PASS=root'
 volumes:
-  db_data:
+    db_data:
